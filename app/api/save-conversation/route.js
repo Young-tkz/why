@@ -1,30 +1,37 @@
-import db from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req) {
     try {
         const { conversation, remark } = await req.json();
 
-        const stmt = db.prepare(`
-      INSERT INTO conversations
-      (answers, remark)
-      VALUES (?, ?)
-    `);
+        const { data, error } = await supabase
+            .from("conversations")
+            .insert([
+                {
+                    answers: conversation,
+                    remark,
+                },
+            ])
+            .select();
 
-        const result = stmt.run(
-            JSON.stringify(conversation),
-            remark
-        );
+        if (error) {
+            throw error;
+        }
 
         return Response.json({
             success: true,
-            id: result.lastInsertRowid,
+            data,
         });
     } catch (error) {
         console.error(error);
 
         return Response.json(
-            { error: "Failed to save conversation" },
-            { status: 500 }
+            {
+                error: error.message,
+            },
+            {
+                status: 500,
+            }
         );
     }
 }
