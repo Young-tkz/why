@@ -45,9 +45,7 @@ export default function AdminPage() {
                 ) : (
                     <div className="space-y-8">
                         {conversations.map((item) => {
-                            const answers =
-                                JSON.parse(
-                                    item.answers
+                            const answers = item.answers
                                 );
 
                             return (
